@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="utf-8">
+    <title>网页标题-www.divcss5.com</title>
+    <meta name="keywords" content="关键字" />
+    <meta name="description" content="此网页描述" />
+    <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+    <!-- script到底放哪里比较好呢？ -->
+    <!-- http://blog.csdn.net/ybdesire/article/details/49284699 -->
+</head>
+
+<body>
+    <div>我们用 v-for 指令根据一组数组的选项列表进行渲染。v-for 指令需要使用 item in items 形式的特殊语法，items 是源数据数组并且 item 是数组元素迭代的别名。</div>
+    <div>你也可以用 of 替代 in 作为分隔符，因为它是最接近 JavaScript 迭代器的语法：</div>
+    <ul id="example-1">
+        <li v-for="item in items">
+            {{ item.message }}
+        </li>
+    </ul>
+    <br>
+    <br>
+    <br>
+    <br>
+    <div>在 v-for 块中，我们拥有对父作用域属性的完全访问权限。v-for 还支持一个可选的第二个参数为当前项的索引。</div>
+    <ul id="example-2">
+        <li v-for="(item, index) in items">
+            {{ parentMessage }} - {{ index }} - {{ item.message }}
+        </li>
+    </ul>
+    <br>
+    <br>
+    <br>
+    <div>不一定要是items，也可以是data里的任何对象,你也可以提供第二个的参数为键名,第三个参数为索引：</div>
+    <ul id="v-for-object" class="demo">
+        <div v-for="(value, key, index) in object">
+            {{ index }}. {{ key }}: {{ value }}
+        </div>
+        <br>
+        <br>
+        <br>
+        <div>v-for 也可以取整数。在这种情况下，它将重复多次模板。</div>
+        <div>
+                <span v-for="n in 10">{{ n }} </span>
+            </div>
+    </ul>
+    <br>
+    <br>
+    <br>
+   
+    
+    <script>
+        var example1 = new Vue({
+            el: '#example-1',
+            data: {
+                items: [{
+                        message: 'Foo'
+                    },
+                    {
+                        message: 'Bar'
+                    }
+                ]
+            }
+        })
+        var example2 = new Vue({
+            el: '#example-2',
+            data: {
+                parentMessage: 'Parent',
+                items: [{
+                        message: 'Foo'
+                    },
+                    {
+                        message: 'Bar'
+                    }
+                ]
+            }
+        })
+        new Vue({
+            el: '#v-for-object',
+            data: {
+                object: {
+                    firstName: 'John',
+                    lastName: 'Doe',
+                    age: 30
+                }
+            }
+        })
+    </script>
+</body>
+
+</html>

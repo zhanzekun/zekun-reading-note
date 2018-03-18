@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="utf-8">
-    <title>网页标题-www.divcss5.com</title>
+    <title>vue组件</title>
     <meta name="keywords" content="关键字" />
     <meta name="description" content="此网页描述" />
     <script src="https://cdn.jsdelivr.net/npm/vue"></script>
@@ -23,7 +23,51 @@
             <todo-item v-for="item in groceryList" v-bind:todo="item" v-bind:key="item.id">
             </todo-item>
         </ol>
+        <br>
+        <div>这就是最简单的prop传递数据</div>
+        <child message="hello!"></child>
     </div>
+    <br>
+    <br>
+    <div>最简单的动态prop，如果你想把一个对象的所有属性作为 prop 进行传递，可以使用不带任何参数的 v-bind (即用 v-bind 而不是 v-bind:prop-name)。</div>
+    <div id="prop-example-2">
+        <input v-model="parentMsg">
+        <br>
+        <child v-bind:message="parentMsg"></child>
+    </div>
+    <br>
+    <br>
+    <br>
+
+    <div>演示下验证prop</div>
+    <div id="prop-example-3">
+        <childzekun num="100" msg="'sdf'" object="{a:'a'}" cust="100"></childzekun>
+    </div>
+
+
+    <br>
+    <br>
+    <br>
+    <div>演示一下自定义事件</div>
+    <div id="counter-event-example">
+        <p>{{ total }}</p>
+        <button-counter v-on:increment="incrementTotal"></button-counter>
+        <button-counter v-on:increment="incrementTotal"></button-counter>
+    </div>
+
+    <br>
+    <br>
+    <br>
+    <div>演示一下payload</div>
+    <div id="message-event-example" class="demo">
+        <p v-for="msg in messages">{{ msg }}</p>
+        <button-message v-on:message="handleMessage"></button-message>
+    </div>
+
+    <div>演示一下自定义事件中的$on</div>
+    <!-- http://www.jb51.net/article/106569.htm -->
+    
+
 
     <script>
         Vue.component('todo-item', {
@@ -31,6 +75,54 @@
             template: '<li>{{ todo.text }}</li>'
         })
 
+        Vue.component('child', {
+            // 声明 props
+            props: ['message'],
+
+            template: '<span>{{ message }}</span>'
+        })
+
+        Vue.component('childzekun', {
+            // 声明 props
+            props: {
+                // 基础类型检测 (`null` 意思是任何类型都可以)
+                num: Number,
+                // 多种类型
+                propB: [String, Number],
+                // 必传且是字符串
+                msg: {
+                    type: String,
+                    required: true
+                },
+                // 数字，有默认值
+                num1: {
+                    type: Number,
+                    default: 1000
+                },
+                // 数组/对象的默认值应当由一个工厂函数返回
+                object: {
+                    type: Object,
+                    default: function () {
+                        return {
+                            message: 'hello'
+                        }
+                    }
+                },
+                // 自定义验证函数
+                cust: {
+                    validator: function (value) {
+                        return value > 10
+                    }
+                }
+            },
+            template: `<div>
+                            <p>{{ num }}</p>
+                             <p>{{ msg }}</p>
+                        <p>{{ object }}</p>
+                        <p>{{ cust }}</p>
+                        </div>`
+
+        })
         var app7 = new Vue({
             el: '#app-7',
             data: {
@@ -49,6 +141,78 @@
                 ]
             }
         })
+        var app8 = new Vue({
+            el: '#prop-example-2',
+            data: {
+                parentMsg: 'Message from parent'
+            }
+        })
+        var app9 = new Vue({
+            el: '#prop-example-3',
+            data: {
+                parentMsg: 'Message from parent'
+            }
+        })
+        // 自定义事件
+        Vue.component('button-counter', {
+            template: '<button v-on:click="incrementCounter">{{ counter }}</button>',
+            data: function () {
+                return {
+                    counter: 0
+                }
+            },
+            methods: {
+                incrementCounter: function () {
+                    this.counter += 1
+                    this.$emit('increment')
+                }
+            },
+        })
+
+        new Vue({
+            el: '#counter-event-example',
+            data: {
+                total: 0
+            },
+            methods: {
+                incrementTotal: function () {
+                    this.total += 1
+                }
+            }
+        })
+        //payload
+        Vue.component('button-message', {
+            template: `<div>
+    <input type="text" v-model="message" />
+    <button v-on:click="handleSendMessage">Send</button>
+  </div>`,
+            data: function () {
+                return {
+                    message: 'test message'
+                }
+            },
+            methods: {
+                handleSendMessage: function () {
+                    this.$emit('message', {
+                        message: this.message
+                    })
+                }
+            }
+        })
+
+        new Vue({
+            el: '#message-event-example',
+            data: {
+                messages: []
+            },
+            methods: {
+                handleMessage: function (payload) {
+                    console.log(payload.message);
+                    this.messages.push(payload.message)
+                }
+            }
+        })
+        
     </script>
 </body>
 

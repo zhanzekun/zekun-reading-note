@@ -85,23 +85,149 @@
 
 - 3.改变this指向的方法有哪些，有什么区别呢，为什么bind要生成一个函数副本呢 
 
+   - call
+
+      - 该方法的作用和 [`apply()`](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Function/apply) 方法类似，只有一个区别，就是`call()`方法接受的是**若干个参数的列表**，而`apply()`方法接受的是**一个包含多个参数的数组**。 
+
+   - apply
+
+      - https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Function/apply
+
+      - ```
+         func.apply(thisArg, [argsArray])
+         
+         thisArg
+         	可选的。在 func 函数运行时使用的 this 值。需要注意的是，使用的 this 值并不一定是该函数执行时真正的 this 值，如果这个函数处于非严格模式下，则指定为 null 或 undefined 时会自动替换为指向全局对象（浏览器中就是window对象），同时值为原始值（数字，字符串，布尔值）的 this 会指向该原始值的包装对象。
+         argsArray
+         	可选的。一个数组或者类数组对象，其中的数组元素将作为单独的参数传给 func 函数。如果该参数的值为null 或 undefined，则表示不需要传入任何参数。从ECMAScript 5 开始可以使用类数组对象。浏览器兼容性请参阅本文底部内容。
+         ```
+
+   - bind 
+
 - 4.说一下JS的原型吧，原型链呢，怎么遍历一个对象上不是原型上的所有属性呢 
 
-- 5.怎么判断一个对象为空对象呢，回答了JSON方法，还有吗 
+   - https://github.com/mqyqingfeng/Blog/issues/2  JS的原型，原型链
+
+   - https://segmentfault.com/a/1190000012849832 遍历对象属性详解
+
+      - 遍历自身可枚举的属性 (可枚举，非继承属性) **Object.keys()** 方法 
+
+      - 遍历自身的所有属性(可枚举，不可枚举，非继承属性) **Object.getOwnPropertyNames()**方法 
+
+         - ```
+            var arr = ["a", "b", "c"];
+            console.log(Object.getOwnPropertyNames(arr).sort()); // ["0", "1", "2", "length"]
+            ```
+
+      - for...in ...会输出自身以及原型链上可枚举的属性
+
+      - https://segmentfault.com/a/1190000014762317
+
+- 5.怎么判断一个对象为空对象呢，回答了JSON方法，还有吗
+
+   - 最常见的思路，`for...in...` 遍历属性，为真则为“非空数组”；否则为“空数组” 
+
+      ```
+      for (var i in obj) { // 如果不为空，则会执行到这一步，返回true
+          return true
+      }
+      return false // 如果为空,返回false
+      ```
+
+       
+
+   - 通过 `JSON` 自带的 `stringify()` 方法来判断:，`JSON.stringify()` 方法用于将 `JavaScript` 值转换为 `JSON` 字符串。 
+
+      ```
+      if (JSON.stringify(data) === '{}') {
+          return false // 如果为空,返回false
+      }
+      return true // 如果不为空，则会执行到这一步，返回true
+      ```
+
+      
+
+   - `ES6` 新增的方法 `Object.keys()`: 
+
+      ```
+      if (Object.keys(object).length === 0) {
+          return false // 如果为空,返回false
+      }
+      return true // 如果不为空，则会执行到这一步，返回true
+      ```
+
+   - 那为什么会这样呢
+
+      ```
+      var a =[];a==[]
+      =》  false
+      var a =[];a===[]
+      =》  false
+      
+      因为两个对象比较，会比较它们在内存中是不是同一个对象，虽然都是[],但是不是同一个，所以判断条件为false，可以用JSON.stringify(obj) === '[]'判断是否为空数组
+      
+      []可以理解为new Array()，相当于声明了一个新的空数组，程序会自动在堆中为其开辟一块内存空间，它和之前a = []生成的内存空间不是同一块，所以自然不相等。
+      ```
+
+      
 
 - 6.用过cookie吗，怎么修改cookie呢，除了JS方法还有什么方法呢 
 
+   - ```
+      　document.cookie
+      ```
+
 - 7.现在我想修改cookie方法中的username，怎么做到呢 
+
+   - JS设置啊我靠？可以在console里用JavaScript修改
+
+      ```
+      document.cookie="keyofcookie=valueofcookie"
+      ```
 
 - 8.cookie都有哪些参数呢，cookie的本质是什么，如果让你封装一个cookie方法你怎么实现 
 
+   - https://segmentfault.com/a/1190000004556040
+
+   - https://blog.csdn.net/helloliuhai/article/details/18351439
+
+   - expires（现在已经被**max-age**属性所取代，**max-age用秒来设置cookie的生存期。** ）
+
+   - secure，https协议中才会被发送
+
+   - httpOnly，客户端无法修改
+
+   - #### **domain属性** ，**path属性** 
+
+      - #### `omain`是域名，`path`是路径，两者加起来就构成了 URL，`domain`和`path`一起来限制 cookie 能被哪些 URL 访问。
+
+         一句话概括：某cookie的 `domain`为“baidu.com”, `path`为“/ ”，若请求的URL(URL 可以是js/html/img/css资源请求，**但不包括 XHR 请求**)的域名是“baidu.com”或其子域如“api.baidu.com”、“dev.api.baidu.com”，且 URL 的路径是“/ ”或子路径“/home”、“/home/login”，则浏览器会将此 cookie 添加到该请求的 cookie 头部中。
+
+         所以`domain`和`path`2个选项共同决定了`cookie`何时被浏览器自动添加到请求头部中发送出去。如果没有设置这两个选项，则会使用默认值。`domain`的默认值为设置该`cookie`的网页所在的域名，`path`默认值为设置该`cookie`的网页所在的目录。
+
+   - koa里session 配置项有一个overwrite：是否会覆盖之前设置同名的 session
+
+      - https://segmentfault.com/a/1190000012412299
+
 - 9.知道POST方法吗，POST方法如何设置传输的数据的格式 
+
+   - https://www.cnblogs.com/zuobaiquan01/p/8414272.html
+   - 最常见的是application/json
+   - text/xml
+   - multipart/form-data，我们使用表单上传文件时，必须让 表单的 enctype 等于 multipart/form-data 
+   - application/x-www-form-urlencoded 浏览器的原生 表单，如果不设置 `enctype` 属性，那么最终就会以 `application/x-www-form-urlencoded`方式提交数据 
 
 - 10.除了POST方法你还知道哪些方法
 
+   - 不懂
+
 - 11.前端向后端传输数据的方法有哪些，ajax?还有呢，fetch？还有呢，JSONP？还有吗，表单传输？ 
 
+   - 不懂
+
 - 12.详细说一下表单是怎么传输数据的 
+
+   - 不懂
 
 - 13.HTTP状态码知道哪些，有哪些场景会用到301呢 
 

@@ -2,6 +2,8 @@
 
 https://zhuanlan.zhihu.com/p/34453198?group_id=957277540147056640
 
+https://segmentfault.com/a/1190000006879700
+
 1. 输入地址
 
    1. 浏览器会首先解析URL从而获得如下信息

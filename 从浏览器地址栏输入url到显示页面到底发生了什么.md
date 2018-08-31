@@ -1,6 +1,8 @@
 ##### 从浏览器地址栏输入url到显示页面的步骤
 
+https://zhuanlan.zhihu.com/p/34453198?group_id=957277540147056640
 
+https://segmentfault.com/a/1190000006879700
 
 1. 输入地址
 

@@ -144,7 +144,7 @@ https://segmentfault.com/a/1190000006879700
 
    3. tcp/ip请求
 
-      1. 三次握手：
+      1. 三次握手：https://www.cnblogs.com/thrillerz/p/6464203.html
 
          - TCP握手：
            - *SYN*(synchronous)是*TCP*/IP建立连接时使用的握手信号。在标志位上，在客户机和服务器之间建立正常的*TCP*网络连接时,客户机首先发出一个*SYN*消息,服务器使用*SYN*+ACK应答表示接收到了这个消息，最后客户机再以[ACK](https://baike.baidu.com/item/ACK)消息响应。这样在客户机和服务器之间才能建立起可靠的TCP连接

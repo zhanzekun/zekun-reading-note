@@ -71,7 +71,165 @@
 
 - 自定义服务端路由
 
-- 
+- next.js支持动态导入
+
+  - 基础支持
+
+    ```jsx
+    import dynamic from 'next/dynamic'
+    
+    const DynamicComponent = dynamic(import('../components/hello'))
+    
+    export default () =>
+      <div>
+        <Header />
+        <DynamicComponent />
+        <p>HOME PAGE is here!</p>
+      </div>
+    ```
+
+  - 加载组件后 修改再引入
+
+    ```jsx
+    import dynamic from 'next/dynamic'
+    
+    const DynamicComponentWithCustomLoading = dynamic(
+      import('../components/hello2'),
+      {
+        loading: () => <p>...</p>
+      }
+    )
+    
+    export default () =>
+      <div>
+        <Header />
+        <DynamicComponentWithCustomLoading />
+        <p>HOME PAGE is here!</p>
+      </div>
+    ```
+
+  - 还可以设置禁止使用SSR
+
+  - 也支持同时加载多个模块拼接在一起
+
+    ```jsx
+    import dynamic from 'next/dynamic'
+    
+    const HelloBundle = dynamic({
+      modules: () => {
+        const components = {
+          Hello1: import('../components/hello1'),
+          Hello2: import('../components/hello2')
+        }
+    
+        return components
+      },
+      render: (props, { Hello1, Hello2 }) =>
+        <div>
+          <h1>
+            {props.title}
+          </h1>
+          <Hello1 />
+          <Hello2 />
+        </div>
+    })
+    
+    export default () => <HelloBundle title="Dynamic Bundle" />
+    ```
+
+- 自定义<App>，可以通过重写./pages/_app.js文件来控制页面初始化
+
+  - 当页面变化时保持页面布局
+  - 当路由变化时保持页面状态
+  - 使用`componentDidCatch`自定义处理错误
+  - 注入额外数据到页面里 (如 GraphQL 查询)
+
+- 自定义<Document>，重写./pages/_document.js文件
+
+  - next.js自动定义了html文件头部的一些html标签，比如head meta之类的，但是如果我们想重写，比如添加上一些css库/一些meta属性等等，就重写这个文件
+
+    ```jsx
+    // _document is only rendered on the server side and not on the client side
+    // Event handlers like onClick can't be added to this file
+    
+    // ./pages/_document.js
+    import Document, { Head, Main, NextScript } from 'next/document'
+    
+    export default class MyDocument extends Document {
+      static async getInitialProps(ctx) {
+        const initialProps = await Document.getInitialProps(ctx)
+        return { ...initialProps }
+      }
+    
+      render() {
+        return (
+          <html>
+            <Head>
+              <style>{`body { margin: 0 } /* custom! */`}</style>
+            </Head>
+            <body className="custom_class">
+                这个main是渲染html主页面，可以通俗的理解为就是放页面中的react组件，所有的react组件会被打包放在这个main标签里。如果渲染发生错误，main会自动渲染error.js页面
+                这个nextsctipt……我也不知道是干嘛的
+                英文文档里是这些写的：All of <Head />, <Main /> and <NextScript /> are required for page to be properly rendered. 
+              <Main />
+              <NextScript />
+            </body>
+          </html>
+        )
+      }
+    }
+    ```
+
+- 自定义错误处理
+
+  - 404和500错误客户端和服务端都会通过`error.js`组件处理。如果你想改写它，则在page目录下新建`_error.js`
+    - 意思就是说其实4xx错误和5xx错误都在error.js处理，想为特殊的http错误处理不同的请求就要用组件化的方式
+
+- 自定义配置，在根目录下新建next.config.js，有2种方式编写
+
+  - 直接module.exports
+
+    ```JavaScript
+    // next.config.js
+    module.exports = {
+      // 巴拉巴拉
+    }
+    ```
+
+  - 用函数，这里phase是配置文件被加载时的当前内容（create-next-app的脚手架就是这么写的）
+
+    ```javascript
+    module.exports = (phase, {defaultConfig}) => {
+      return {
+        // 巴拉巴拉
+      }
+    }
+    ```
+
+  - next.js默认生成etags到每个页面中，可以在配置里禁止
+
+  - next.config.js里海暴露了若干个选项来控制服务器部署和缓存页面：onDemandEntries属性
+
+  - next.config.js可配置页面后缀名解析扩展，以此支持typescript
+
+    ```javascript
+    // next.config.js
+    module.exports = {
+      pageExtensions: ['jsx', 'js']
+    }
+    ```
+
+  - 支持配置构建id
+
+- 自定义webpack配置，也是在next.config.js里配置。注意：*webpack方法将被执行两次，一次在服务端一次在客户端。你可以用isServer属性区分客户端和服务端来配置*。
+
+- 自定义babel配置：在根目录下新建.babelrc文件
+
+- Next.js的优势
+
+  - 路由不需要被提前知道
+  - 路由总是被懒加载
+  - 顶层组件可以定义生命周期`getInitialProps`来阻止路由加载（当服务端渲染或路由懒加载时）
 
 - 服务端渲染究竟是怎么提高了首屏加载的性能呢
 
@@ -90,3 +248,9 @@
 - 服务端渲染的缺点：
 
   - > 服务端渲染相当于是把客户端的处理流程部分移植到了服务端，这样就增加了服务端的负载。因此要做一个好的SSR方案，缓存是必不可少的。与此同时工程化方面也是有很多值得优化的地方。
+
+- 参考文献
+
+  - > <http://jartto.wang/2018/06/08/nextjs-3/>
+    >
+    > 
